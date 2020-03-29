@@ -1,0 +1,254 @@
+<%- include('includes/head.ejs') %>
+
+<body>
+    <%- include('includes/loader.ejs') %>
+    <div id="main-wrapper">
+        <%- include('includes/logo.ejs') %>
+        <%- include('includes/mainheader.ejs') %>
+        <%- include('includes/sidebar.ejs') %>
+        <div class="content-body">
+            <div class="row page-titles mx-0">
+                <div class="col p-md-0">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="javascript:void(0)">Helpdesk</a></li>
+                        <li class="breadcrumb-item active"><a href="javascript:void(0)"><%= pageTitle %></a></li>
+                    </ol>
+                </div>
+            </div>
+            <!-- row -->
+
+            <div class="container-fluid">
+                <!-- content here-->
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <% if(isSuccess) { %>
+                                <%- include('includes/successalert.ejs') %>
+                                <% } %>
+
+                                <% if(isError) { %>
+                                <%- include('includes/erroralert.ejs') %>
+                                <% } %>
+                                <h4 class="card-title">Customer Issues</h4>
+
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-bordered zero-configuration">
+                                        <thead>
+                                            <tr>
+                                                <th>TicketNo</th>
+                                                <th>Service</th>
+                                                <th>Message</th>
+                                                <th>Status</th>
+                                                <th>Logged By</th>
+                                                <th>Logged Date</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% if(customerdata.length > 0) { %>
+                                            <% customerdata.forEach(function(data){ %>
+                                            <tr <%= data.id %>>
+                                                <td><%= data.ticketno %></td>
+                                                <td><%= data.service %></td>
+                                                <td><%= data.message %></td>
+                                                <td><%= data.status %></td>
+                                                <td><%= data.loggedBy %></td>
+                                                <td><%= data.logDate %></td>
+                                                <td nowrap="nowrap">
+                                                    <button type="button" name="view" id="<%= data.id %>"
+                                                        class="btn btn-primary edit_data">View</button>
+                                                </td>
+
+                                            </tr>
+                                            <% }); %>
+                                            <% } %>
+                                        </tbody>
+
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog"
+                        aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Assign Ticket</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                            aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form>
+                                        <div class="form-group row">
+                                            <label class="col-sm-2 col-form-label">TicketNo</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" class="form-control" id="ticketno" name="ticketno"
+                                                    disabled>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-2 col-form-label">Cust.Email</label>
+                                            <div class="col-sm-10">
+                                                <input type="email" class="form-control" id="email" name="email"
+                                                    disabled>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-2 col-form-label">Cust.Phone</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" class="form-control" id="phone" name="phone"
+                                                    disabled>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-2 col-form-label">Service</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" class="form-control" id="service" name="service"
+                                                    disabled>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-2 col-form-label">Message</label>
+                                            <div class="col-sm-10">
+                                                <textarea class="form-control" id="message" name="message"
+                                                    disabled></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-2 col-form-label">Status</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" class="form-control" id="status" name="status"
+                                                    disabled>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-2 col-form-label">Assign To</label>
+                                            <div class="col-sm-10">
+                                                <select id="inputState" class="form-control">
+                                                    <option value="">Choose...</option>
+                                                </select>
+                                            </div>
+
+                                        </div>
+                                        <input type="hidden" id="myId" name="myId" />
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-primary save_data">Submit</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-hidden="true" id="successModal">
+                                        <div class="modal-dialog modal-sm">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Success!!</h5>
+                                                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">Issue Assigned Successfully</div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary cls" data-dismiss="modal">Ok</button>
+                                                    <!-- <button type="button" class="btn btn-primary ">Save</button> -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                </div>
+            </div>
+            <!-- #/ container -->
+        </div>
+        <%- include('includes/footer.ejs') %>
+
+    </div>
+
+    <%- include('includes/end.ejs') %>
+
+    <script>
+        $(document).ready(function () {
+            $(document).on('click', '.edit_data', function () {
+                let id = $(this).attr("id");
+                $.ajax({
+                    url: "/helpdesk/" + id,
+                    method: "GET",
+                    dataType: "json",
+                    success: function (data) {
+                        $("#ticketno").val(data.data[0].ticketno);
+                        $("#service").val(data.data[0].service);
+                        $("#message").val(data.data[0].message);
+                        $("#status").val(data.data[0].status);
+                        $("#myId").val(data.data[0].id);
+                        $("#email").val(data.data[0].email);
+                        $("#phone").val(data.data[0].phone);
+                        $("#exampleModal").modal('show')
+                    },
+                })
+            });
+
+            $(document).on('click', '.cls', function () {
+                $("#exampleModal").modal('hide')
+                $("#successModal").modal('hide');
+                location.reload(true);
+                
+            });
+
+            //TODO
+            $(document).on('click', '.save_data', function () {
+                $('.save_data').innerHTML="Submitting..."
+                $.ajax({
+                    url: "/helpdesk/assign-issue",
+                    method: "POST",
+                    dataType: "json",
+                    data: { id: $("#myId").val(), 
+                            assignedTo: $("#inputState option:selected").text(),
+                            assignedDate:new Date(),
+                            assVal:$("#inputState").val(),
+                            ticketno: $("#ticketno").val(),
+                            message: $("#message").val()
+                         },
+                    success: function (data) {
+                        $("#successModal").modal('show');
+                    },
+                    error:function(jqXHR){
+                        $(this).innerHTML="Submit"
+                        console.log(jqXHR.responseText);
+                    }
+                })
+            });
+
+            setTimeout(() => {
+                location.reload(true);
+            }, 1800000)
+
+            $.ajax({
+                method: "GET", url: "/helpdesk/staff",
+                dataType: "json",
+                contentType: "application/json",
+                success: function (res) {
+                    $.each(res.data, function (data, value) {
+                        $("#inputState")
+                            .append($("<option></option>")
+                                .val(value.username)
+                                .html(value.fullname));
+                    })
+                }
+
+            });
+        })
+
+
+
+    </script>
+
+
+
+</body>
+
+</html>

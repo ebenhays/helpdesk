@@ -21,7 +21,17 @@ module.exports = (sequelize, DataTypes) => {
           isIn: [["pending", "assigned", "resolved", "closed"]]
         }
       },
-      ticketno: DataTypes.STRING
+      ticketno: DataTypes.STRING,
+      assignedTo: DataTypes.STRING,
+      assignedBy: DataTypes.STRING,
+      assignedDate: DataTypes.DATE,
+      resolvedDate: DataTypes.DATE,
+      resolvedBy: DataTypes.STRING,
+      closedDate: DataTypes.DATE,
+      closedBy: DataTypes.STRING,
+      reassignedBy: DataTypes.STRING,
+      reassignedDate: DataTypes.DATE,
+      reassignedTo: DataTypes.STRING
     },
     {}
   );

@@ -5,9 +5,11 @@ const { sendUserEmail } = require("../../commons/sendMail");
 const strongPasswordRegex = new RegExp(
   "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})"
 );
+
 const {
   VIEW_LOGIN,
   VIEW_REGISTER,
+  ADMIN_REGISTER,
   VIEW_CHANGE_PWD,
   ADMIN_CHANGE_PASSWORD,
   LOGIN_PAGETITLE,
@@ -16,19 +18,47 @@ const {
   HELPDESK,
   ADMIN_LOGIN
 } = require("../../commons/constants");
-const moment = require("moment");
+
 const CODE_LENGTH = 8;
+const { validationResult } = require("express-validator");
 exports.loginPage = (req, res) => {
-  res.render(VIEW_LOGIN, {
-    pageTitle: LOGIN_PAGETITLE,
-    isError: null,
-    successMsg: null,
-    errMsg: null
-  });
+  try {
+    return res.render(VIEW_LOGIN, {
+      pageTitle: LOGIN_PAGETITLE,
+      isError: req.flash("iserror").length > 0 ? true : null,
+      isSuccess: req.flash("issuccess").length > 0 ? true : null,
+      successMsg: req.flash("success"),
+      errMsg: req.flash("error"),
+      oldInput: {
+        email: "",
+        password: ""
+      }
+    });
+  } catch (error) {}
 };
 
 exports.postLogin = async (req, res) => {
   const { email, userpassword } = req.body;
+  const errors = validationResult(req);
+  const errpush = [];
+  if (errors.array().length > 0) {
+    errors.array().map(v => {
+      errpush.push(v.msg);
+    });
+  }
+  if (!errors.isEmpty()) {
+    return res.render(VIEW_LOGIN, {
+      pageTitle: LOGIN_PAGETITLE,
+      isError: true,
+      isSuccess: req.flash("issuccess").length > 0 ? true : null,
+      successMsg: req.flash("success"),
+      errMsg: errpush,
+      oldInput: {
+        email: email,
+        password: userpassword
+      }
+    });
+  }
   const checkUser = await models.UserProfiles.findOne({
     where: { username: email }
   });
@@ -40,11 +70,8 @@ exports.postLogin = async (req, res) => {
       fullname,
       pwdExpiresAt
     } = checkUser.dataValues;
-
     bcrypt.compare(userpassword, password, (err, result) => {
       if (result) {
-        //cookie
-        //res.setHeader('Set-Cookie', 'loggedIn=true'; HttpOnly);
         req.session.loggedIn = true;
         req.session.user = email;
         req.session.name = fullname;
@@ -60,37 +87,62 @@ exports.postLogin = async (req, res) => {
           res.redirect(HELPDESK.MAIN);
         }
       } else {
-        res.render(VIEW_LOGIN, {
-          isError: true,
-          successMsg: null,
-          errMsg: "Credentials Invalid",
-          pageTitle: LOGIN_PAGETITLE
+        req.flash("error", "Credentials Invalid");
+        req.flash("iserror", true);
+        return res.render(VIEW_LOGIN, {
+          pageTitle: LOGIN_PAGETITLE,
+          isError: req.flash("iserror").length > 0 ? true : null,
+          isSuccess: req.flash("issuccess").length > 0 ? true : null,
+          successMsg: req.flash("success"),
+          errMsg: req.flash("error"),
+          oldInput: {
+            email: email,
+            password: userpassword
+          }
         });
       }
     });
   } else {
-    res.render(VIEW_LOGIN, {
-      isError: true,
-      successMsg: null,
-      errMsg: "Credentials Invalid",
-      pageTitle: LOGIN_PAGETITLE
+    req.flash("error", "Credentials Invalid");
+    req.flash("iserror", true);
+    return res.render(VIEW_LOGIN, {
+      pageTitle: LOGIN_PAGETITLE,
+      isError: req.flash("iserror").length > 0 ? true : null,
+      isSuccess: req.flash("issuccess").length > 0 ? true : null,
+      successMsg: req.flash("success"),
+      errMsg: req.flash("error"),
+      oldInput: {
+        email: email,
+        password: userpassword
+      }
     });
   }
 };
 
+exports.postLogout = async (req, res) => {
+  req.session.destroy(err => {
+    res.redirect(ADMIN_LOGIN);
+  });
+};
+
 exports.registerPage = (req, res) => {
-  res.render(VIEW_REGISTER, {
+  return res.render(VIEW_REGISTER, {
     pageTitle: REGISTER_PAGETITLE,
-    isError: null,
-    successMsg: null,
-    errMsg: null
+    isError: req.flash("iserror").length > 0 ? true : null,
+    isSuccess: req.flash("issuccess").length > 0 ? true : null,
+    successMsg: req.flash("success"),
+    errMsg: req.flash("error"),
+    oldInput: {
+      fullname: "",
+      email: "",
+      role: ""
+    }
   });
 };
 
 exports.postRegister = async (req, res) => {
   const { fullname, email, role } = req.body;
   const generatedPassword = passwordGenerate();
-  console.log(generatedPassword);
   try {
     const checkUserExist = await models.UserProfiles.findOne({
       where: { username: email }
@@ -99,10 +151,19 @@ exports.postRegister = async (req, res) => {
     if (checkUserExist === null) {
       bcrypt.hash(generatedPassword, 12, (err, hash) => {
         if (err) {
-          res.render(VIEW_REGISTER, {
-            isError: true,
-            errMsg: "There was a problem saving user",
-            pageTitle: REGISTER_PAGETITLE
+          req.flash("error", "There was a problem saving user");
+          req.flash("iserror", true);
+          return res.render(VIEW_REGISTER, {
+            pageTitle: REGISTER_PAGETITLE,
+            isError: req.flash("iserror").length > 0 ? true : null,
+            isSuccess: req.flash("issuccess").length > 0 ? true : null,
+            successMsg: req.flash("success"),
+            errMsg: req.flash("error"),
+            oldInput: {
+              fullname: fullname,
+              email: email,
+              role: role
+            }
           });
         }
         models.UserProfiles.create({
@@ -112,54 +173,93 @@ exports.postRegister = async (req, res) => {
           fullname,
           IsDefault: "Y"
         });
-
-        res.render(VIEW_REGISTER, {
-          isError: false,
-          successMsg: `User with email ${email} successfully created`,
-          pageTitle: REGISTER_PAGETITLE
+        req.flash("success", "User Registered Successfully");
+        req.flash("issuccess", true);
+        return res.render(VIEW_REGISTER, {
+          pageTitle: REGISTER_PAGETITLE,
+          isError: req.flash("iserror").length > 0 ? true : null,
+          isSuccess: req.flash("issuccess").length > 0 ? true : null,
+          successMsg: req.flash("success"),
+          errMsg: req.flash("error"),
+          oldInput: {
+            fullname: fullname,
+            email: email,
+            role: role
+          }
         });
       });
-
-      // await sendUserEmail({
-      //   toMail: email,
-      //   subject: "Account Default Password",
-      //   message: `Dear ${fullname}, Kindly use this password ${generatedPassword} to reset your account.`
-      // });
+      await sendUserEmail(
+        email,
+        "Account Default Password",
+        `<p> Dear ${fullname}, <br/>
+         <p> Kindly use this password <b>${generatedPassword}</b> to reset your account.</p> <br/>
+         <p> You can login to <a href="${process.env.BASE_URL}/admin">Helpdesk</a> to reset your password. </p>
+         `
+      );
     } else {
-      res.render(VIEW_REGISTER, {
-        isError: true,
-        errMsg: `User with email ${email} already exist`,
-        pageTitle: REGISTER_PAGETITLE
+      req.flash("error", `User with email ${email} already exist`);
+      req.flash("iserror", true);
+      return res.render(VIEW_REGISTER, {
+        pageTitle: REGISTER_PAGETITLE,
+        isError: req.flash("iserror").length > 0 ? true : null,
+        isSuccess: req.flash("issuccess").length > 0 ? true : null,
+        successMsg: req.flash("success"),
+        errMsg: req.flash("error"),
+        oldInput: {
+          fullname: fullname,
+          email: email,
+          role: role
+        }
       });
     }
   } catch (error) {
-    res.render(VIEW_REGISTER, {
-      isError: true,
-      errMsg: "There was a problem saving user",
-      pageTitle: REGISTER_PAGETITLE
+    req.flash("error", `User with email ${email} already exist`);
+    req.flash("iserror", true);
+    return res.render(VIEW_REGISTER, {
+      pageTitle: REGISTER_PAGETITLE,
+      isError: req.flash("iserror").length > 0 ? true : null,
+      isSuccess: req.flash("issuccess").length > 0 ? true : null,
+      successMsg: req.flash("success"),
+      errMsg: req.flash("error"),
+      oldInput: {
+        fullname: fullname,
+        email: email,
+        role: role
+      }
     });
   }
 };
 
 exports.changePassword = (req, res) => {
-  res.render(VIEW_CHANGE_PWD, {
+  return res.render(VIEW_CHANGE_PWD, {
     pageTitle: CHANGE_PWD_PAGETITLE,
-    isError: null,
-    successMsg: null,
-    errMsg: null
+    isError: req.flash("iserror").length > 0 ? true : null,
+    isSuccess: req.flash("issuccess").length > 0 ? true : null,
+    successMsg: req.flash("success"),
+    errMsg: req.flash("error"),
+    oldInput: {
+      confirmpassword: "",
+      newpassword: ""
+    }
   });
 };
 
 exports.postChangePassword = async (req, res) => {
-  console.log("got here men");
   try {
     const { confirmpassword, newpassword } = req.body;
     if (confirmpassword !== newpassword) {
-      res.render(VIEW_CHANGE_PWD, {
-        isError: true,
-        successMsg: null,
-        errMsg: "Password Mismatch",
-        pageTitle: CHANGE_PWD_PAGETITLE
+      req.flash("error", "Password Mismatch");
+      req.flash("iserror", true);
+      return res.render(VIEW_CHANGE_PWD, {
+        pageTitle: CHANGE_PWD_PAGETITLE,
+        isError: req.flash("iserror").length > 0 ? true : null,
+        isSuccess: req.flash("issuccess").length > 0 ? true : null,
+        successMsg: req.flash("success"),
+        errMsg: req.flash("error"),
+        oldInput: {
+          confirmpassword: confirmpassword,
+          newpassword: newpassword
+        }
       });
     }
     Date.prototype.addDays = function(days) {
@@ -184,11 +284,18 @@ exports.postChangePassword = async (req, res) => {
 
       bcrypt.compare(confirmpassword, password, (err, result) => {
         if (err) {
-          res.render(VIEW_CHANGE_PWD, {
-            isError: true,
-            successMsg: null,
-            errMsg: "Could not verify password. try again later",
-            pageTitle: CHANGE_PWD_PAGETITLE
+          req.flash("error", "Could not verify password. try again later");
+          req.flash("iserror", true);
+          return res.render(VIEW_CHANGE_PWD, {
+            pageTitle: CHANGE_PWD_PAGETITLE,
+            isError: req.flash("iserror").length > 0 ? true : null,
+            isSuccess: req.flash("issuccess").length > 0 ? true : null,
+            successMsg: req.flash("success"),
+            errMsg: req.flash("error"),
+            oldInput: {
+              confirmpassword: confirmpassword,
+              newpassword: newpassword
+            }
           });
         }
         if (!result) {
@@ -203,7 +310,7 @@ exports.postChangePassword = async (req, res) => {
                 },
                 { where: { username } }
               );
-              res.redirect(HELPDESK.MAIN);
+              return res.redirect(HELPDESK.MAIN);
             } else {
               let respMessage = `Your password does not meet requirment,
                             It must contain at least 1 lowercase alphabetical character,
@@ -212,34 +319,69 @@ exports.postChangePassword = async (req, res) => {
                             The total password length must be 8 characters or longer.
                           `;
               const newMsg = respMessage.replace(/\s+/g, " ");
-              res.render(VIEW_CHANGE_PWD, {
-                isError: true,
-                successMsg: null,
-                errMsg: newMsg,
-                pageTitle: CHANGE_PWD_PAGETITLE
+              req.flash("error", newMsg);
+              req.flash("iserror", true);
+              return res.render(VIEW_CHANGE_PWD, {
+                pageTitle: CHANGE_PWD_PAGETITLE,
+                isError: req.flash("iserror").length > 0 ? true : null,
+                isSuccess: req.flash("issuccess").length > 0 ? true : null,
+                successMsg: req.flash("success"),
+                errMsg: req.flash("error"),
+                oldInput: {
+                  confirmpassword: confirmpassword,
+                  newpassword: newpassword
+                }
               });
             }
           });
         } else {
-          res.render(VIEW_CHANGE_PWD, {
-            isError: true,
-            successMsg: null,
-            errMsg:
-              "This password has been used recently, please consider changing it.",
-            pageTitle: CHANGE_PWD_PAGETITLE
+          req.flash(
+            "error",
+            "This password has been used recently, please consider changing it."
+          );
+          req.flash("iserror", true);
+          return res.render(VIEW_CHANGE_PWD, {
+            pageTitle: CHANGE_PWD_PAGETITLE,
+            isError: req.flash("iserror").length > 0 ? true : null,
+            isSuccess: req.flash("issuccess").length > 0 ? true : null,
+            successMsg: req.flash("success"),
+            errMsg: req.flash("error"),
+            oldInput: {
+              confirmpassword: confirmpassword,
+              newpassword: newpassword
+            }
           });
         }
       });
     } else {
-      res.render(VIEW_CHANGE_PWD, {
-        isError: true,
-        successMsg: null,
-        errMsg: "There was a problem verifying user",
-        pageTitle: CHANGE_PWD_PAGETITLE
+      req.flash("error", "There was a problem verifying user");
+      req.flash("iserror", true);
+      return res.render(VIEW_CHANGE_PWD, {
+        pageTitle: CHANGE_PWD_PAGETITLE,
+        isError: req.flash("iserror").length > 0 ? true : null,
+        isSuccess: req.flash("issuccess").length > 0 ? true : null,
+        successMsg: req.flash("success"),
+        errMsg: req.flash("error"),
+        oldInput: {
+          confirmpassword: confirmpassword,
+          newpassword: newpassword
+        }
       });
     }
   } catch (error) {
-    console.log(error);
+    req.flash("error", "A problem occured changing password");
+    req.flash("iserror", true);
+    return res.render(VIEW_CHANGE_PWD, {
+      pageTitle: CHANGE_PWD_PAGETITLE,
+      isError: req.flash("iserror").length > 0 ? true : null,
+      isSuccess: req.flash("issuccess").length > 0 ? true : null,
+      successMsg: req.flash("success"),
+      errMsg: req.flash("error"),
+      oldInput: {
+        confirmpassword: confirmpassword,
+        newpassword: newpassword
+      }
+    });
   }
 };
 

@@ -30,6 +30,16 @@ module.exports = {
         type: Sequelize.STRING,
         unique: true
       },
+      assignedTo: { type: Sequelize.STRING },
+      assignedBy: { type: Sequelize.STRING },
+      assignedDate: { type: Sequelize.DATE },
+      resolvedDate: { type: Sequelize.DATE },
+      resolvedBy: { type: Sequelize.STRING },
+      closedDate: { type: Sequelize.DATE },
+      closedBy: { type: Sequelize.STRING },
+      reassignedBy: { type: Sequelize.STRING },
+      reassignedDate: { type: Sequelize.DATE },
+      reassignedTo: { type: Sequelize.STRING },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

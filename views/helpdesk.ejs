@@ -1,0 +1,84 @@
+<%- include('includes/head.ejs') %>
+
+<body>
+ <%- include('includes/loader.ejs') %>
+    <div id="main-wrapper">
+<%- include('includes/logo.ejs') %>
+<%- include('includes/mainheader.ejs') %>
+<%- include('includes/sidebar.ejs') %>
+        <div class="content-body">
+
+            <div class="row page-titles mx-0">
+                <div class="col p-md-0">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="javascript:void(0)">Helpdesk</a></li>
+                        <li class="breadcrumb-item active"><a href="javascript:void(0)"><%= pageTitle %></a></li>
+                    </ol>
+                </div>
+            </div>
+            <!-- row -->
+
+            <div class="container-fluid">
+            <!-- content here-->
+            <div class="row">
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="card gradient-1">
+                            <div class="card-body">
+                                <h3 class="card-title text-white">Pending Tickets</h3>
+                                <div class="d-inline-block">
+                                    <h2 class="text-white"><%=pending %></h2>
+                                    <p class="text-white mb-0">Total Pending</p>
+                                </div>
+                                 <span class="float-right display-5 opacity-5"><i class="fa fa-question"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="card gradient-2">
+                            <div class="card-body">
+                                <h3 class="card-title text-white">Closed Tickets</h3>
+                                <div class="d-inline-block">
+                                    <h2 class="text-white"><%=closed %></h2>
+                                    <p class="text-white mb-0">Total Closed</p>
+                                </div>
+                                 <span class="float-right display-5 opacity-5"><i class="fa fa-remove"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="card gradient-3">
+                            <div class="card-body">
+                                <h3 class="card-title text-white">Assigned Tickets</h3>
+                                <div class="d-inline-block">
+                                    <h2 class="text-white"><%=assigned %></h2>
+                                    <p class="text-white mb-0">Total Assigned</p>
+                                </div>
+                                <span class="float-right display-5 opacity-5"><i class="fa fa-random"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="card gradient-4">
+                            <div class="card-body">
+                                <h3 class="card-title text-white">Total Resolved</h3>
+                                <div class="d-inline-block">
+                                    <h2 class="text-white"><%=resolved %></h2>
+                                    <p class="text-white mb-0">Total Resolved</p>
+                                </div>
+                                <span class="float-right display-5 opacity-5"><i class="fa fa-handshake-o"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- #/ container -->
+        </div>
+        <%- include('includes/footer.ejs') %>
+       
+    </div>
+   
+  <%- include('includes/end.ejs') %>
+
+</body>
+
+</html>

@@ -1,0 +1,306 @@
+<%- include('includes/head.ejs') %>
+
+<body>
+    <%- include('includes/loader.ejs') %>
+    <div id="main-wrapper">
+        <%- include('includes/logo.ejs') %>
+        <%- include('includes/mainheader.ejs') %>
+        <%- include('includes/sidebar.ejs') %>
+        <div class="content-body">
+            <div class="row page-titles mx-0">
+                <div class="col p-md-0">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="javascript:void(0)">Helpdesk</a></li>
+                        <li class="breadcrumb-item active"><a href="javascript:void(0)"><%= pageTitle %></a></li>
+                    </ol>
+                </div>
+            </div>
+            <!-- row -->
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Issue Tracker</h4>
+                        <!-- Nav tabs -->
+                        <div class="custom-tab-1">
+                            <ul class="nav nav-tabs mb-3">
+                                <li class="nav-item"><a class="nav-link active" data-toggle="tab"
+                                        href="#assigned">Assigned Tickets</a>
+                                </li>
+                                <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#resolved">Resolved
+                                        Tickets</a>
+                                </li>
+                                <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#closed">Closed
+                                        Tickets</a>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane fade show active" id="assigned" role="tabpanel">
+                                    <div class="p-t-15">
+
+                                        <div class="table-responsive">
+                                            <table class="table table-striped table-bordered zero-configuration">
+                                                <thead>
+                                                    <tr>
+                                                        <th>TicketNo</th>
+                                                        <th>Service</th>
+                                                        <th>Message</th>
+                                                        <th>Status</th>
+                                                        <th>Logged By</th>
+                                                        <th>Logged Date</th>
+                                                        <th>AssignedTo</th>
+                                                        <th>AssignedBy</th>
+                                                        <th>Assigned Date</th>
+                                                        <th>Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <% if(customerdata.length > 0) { %>
+                                                    <% customerdata.forEach(function(data){ %>
+                                                    <tr <%= data.id %>>
+                                                        <td><%= data.ticketno %></td>
+                                                        <td><%= data.service %></td>
+                                                        <td><%= data.message %></td>
+                                                        <td><%= data.status %></td>
+                                                        <td><%= data.loggedBy %></td>
+                                                        <td><%= data.logDate %></td>
+                                                        <td><%= data.assignedTo %></td>
+                                                        <td><%= data.assignedBy %></td>
+                                                        <td><%= data.assignedDate %></td>
+                                                        <td nowrap="nowrap">
+                                                            <button type="button" name="view" id="<%= data.id %>"
+                                                                class="btn btn-primary edit_data">View</button>
+                                                        </td>
+
+                                                    </tr>
+                                                    <% }); %>
+                                                    <% } %>
+                                                </tbody>
+
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="resolved">
+                                    <div class="p-t-15">
+                                        <div class="table-responsive">
+                                            <table class="table table-striped table-bordered zero-configuration">
+                                                <thead>
+                                                    <tr>
+                                                        <th>TicketNo</th>
+                                                        <th>Service</th>
+                                                        <th>Message</th>
+                                                        <th>Status</th>
+                                                        <th>Logged By</th>
+                                                        <th>Logged Date</th>
+                                                        <th>AssignedTo</th>
+                                                        <th>AssignedBy</th>
+                                                        <th>AssignedDate</th>
+                                                        <th>ResolveDate</th>
+                                                        <th>ResolveBy</th>
+                                                        <th>Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <% if(resolvedcustomerdata.length > 0) { %>
+                                                    <% resolvedcustomerdata.forEach(function(data){ %>
+                                                    <tr <%= data.id %>>
+                                                        <td><%= data.ticketno %></td>
+                                                        <td><%= data.service %></td>
+                                                        <td><%= data.message %></td>
+                                                        <td><%= data.status %></td>
+                                                        <td><%= data.loggedBy %></td>
+                                                        <td><%= data.logDate %></td>
+                                                        <td><%= data.assignedTo %></td>
+                                                        <td><%= data.assignedBy %></td>
+                                                        <td><%= data.assignedDate %></td>
+                                                        <td><%= data.resolvedDate %></td>
+                                                        <td><%= data.resolvedBy %></td>
+                                                        <td nowrap="nowrap">
+                                                            <button type="button" name="view" id="<%= data.id %>"
+                                                                class="btn btn-primary edit_data">View</button>
+                                                        </td>
+
+                                                    </tr>
+                                                    <% }); %>
+                                                    <% } %>
+                                                </tbody>
+
+                                            </table>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="closed">
+                                    <div class="p-t-15">
+                                        <div class="table-responsive">
+                                            <table class="table table-striped table-bordered zero-configuration">
+                                                <thead>
+                                                    <tr>
+                                                        <th>TicketNo</th>
+                                                        <th>Service</th>
+                                                        <th>Message</th>
+                                                        <th>Status</th>
+                                                        <th>Logged By</th>
+                                                        <th>Logged Date</th>
+                                                        <th>AssignedTo</th>
+                                                        <th>AssignedBy</th>
+                                                        <th>AssignedDate</th>
+                                                        <th>Closed By</th>
+                                                        <th>Closed Date</th>
+                                                        <th>Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <% if(closedcustomerdata.length > 0) { %>
+                                                    <% closedcustomerdata.forEach(function(data){ %>
+                                                    <tr <%= data.id %>>
+                                                        <td><%= data.ticketno %></td>
+                                                        <td><%= data.service %></td>
+                                                        <td><%= data.message %></td>
+                                                        <td><%= data.status %></td>
+                                                        <td><%= data.loggedBy %></td>
+                                                        <td><%= data.logDate %></td>
+                                                        <td><%= data.assignedTo %></td>
+                                                        <td><%= data.assignedBy %></td>
+                                                        <td><%= data.assignedDate %></td>
+                                                        <td><%= data.closedBy %></td>
+                                                        <td><%= data.closedDate %></td>
+                                                        <td nowrap="nowrap">
+                                                            <button type="button" name="view" id="<%= data.id %>"
+                                                                class="btn btn-primary edit_data">View</button>
+                                                        </td>
+
+                                                    </tr>
+                                                    <% }); %>
+                                                    <% } %>
+                                                </tbody>
+
+                                            </table>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-hidden="true"
+                id="successModal">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Change Status</h5>
+                            <button type="button" class="close" data-dismiss="modal"><span>&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form>
+                                <div class="form-group">
+                                            <label>New Status</label>
+                                            <select class="form-control" id="sel1">
+                                                <option value="">Choose...</option>
+                                                <option value="closed">Close</option>
+                                                <option value="resolved">Resolved</option>
+                                                <option value="pending">Re-Assign</option>
+                                            </select>
+                                        </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary cls" data-dismiss="modal">Save</button>
+                            <!-- <button type="button" class="btn btn-primary ">Save</button> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-hidden="true"
+                id="successAlertModal">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Change Status</h5>
+                            <button type="button" class="close" data-dismiss="modal"><span>&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            Status Updated Successfully
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary upd" data-dismiss="modal">OK</button>
+                            <!-- <button type="button" class="btn btn-primary ">Save</button> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- #/ container -->
+        </div>
+        <%- include('includes/footer.ejs') %>
+
+    </div>
+
+    <%- include('includes/end.ejs') %>
+
+    <script>
+        $(document).ready(function () {
+            let id = null;
+            $(document).on('click', '.edit_data', function () {
+                id=$(this).attr("id");
+                $("#successModal").modal('show');
+            });
+
+            $(document).on('click', '.cls', function () {
+                let selValue=$("#sel1").val();
+                let resolveDate= null;
+                let closedDate= null;
+                let reassignDate=null;
+               switch (selValue) {
+                   case "closed":
+                       closedDate=new Date();
+                       break;
+                   case "resolved":
+                        resolveDate=new Date();
+                       break;
+                    case "pending":
+                        reassignDate=new Date()
+                        break;
+               
+                   default:
+                       alert("Please Select an Option")
+                       break;
+               }
+                $.ajax({
+                    url:"/helpdesk/update-issue",
+                    method:"POST",
+                    dataType:"json",
+                    data:{status:$("#sel1").val(),
+                    resolvedDate:resolveDate, 
+                    closedDate:closedDate, 
+                    id:id,
+                    reassignedDate:reassignDate},
+                    success:function(data){
+                        console.log(data)
+                         $("#successAlertModal").modal('show');
+                    },
+                    error:function(jqXHR){
+                        console.log(jqXHR.responseText);
+                    }
+                });
+               
+            });
+
+             $(document).on('click', '.upd', function () {
+                $("#successAlertModal").modal('hide');
+                $("#successModal").modal('hide');
+                location.reload(true);
+            });
+            
+            
+        });
+    </script>
+
+
+</body>
+
+</html>

@@ -11,7 +11,7 @@
               <div class="card login-form mb-0">
                 
                 <div class="card-body pt-5">
-                  <% if(isError===false) { %>
+                  <% if(isSuccess) { %>
                   <%- include('includes/successalert.ejs') %>
                   <% } %>
 
@@ -42,6 +42,7 @@
                         placeholder="Enter Fullname"
                         required
                         name="fullname"
+                        value="<%=oldInput.fullname %>"
                       />
                     </div>
                     <div class="form-group">
@@ -52,12 +53,13 @@
                         placeholder="Enter Email"
                         required
                         name="email"
+                        value="<%=oldInput.email %>"
                       />
                     </div>
                     
                         <div class="form-group">
                           <label>Select Role</label>
-                          <select class="form-control" id="sel1" name="role">
+                          <select class="form-control" id="sel1" name="role" selectedValue="<%=oldInput.role %>">
                             <option value="">Choose</option>
                             <option value="admin">Admin</option>
                             <option value="user">User</option>
@@ -66,6 +68,7 @@
                     <button class="btn login-form__btn submit w-100">
                       Sign Up
                     </button>
+                   
                   </form>
                 </div>
               </div>
