@@ -19,9 +19,9 @@ const winston = require("./commons/winston");
 var options = {
   host: process.env.DB_HOST,
   port: 3306,
-  user: process.env.test_DB_USERNAME,
-  password: process.env.test_DB_PASSWORD,
-  database: process.env.test_DATABASE
+  user: process.env.DB_USERNAME,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DATABASE
 };
 
 const sessionStore = new MySQLStore(options);
