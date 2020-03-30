@@ -1,74 +1,118 @@
 <%- include('includes/head.ejs') %>
 
-  <body class="h-100">
-    <%- include('includes/loader.ejs') %>
+<body class="h-100">
+  <%- include('includes/loader.ejs') %>
 
-    <div class="login-form-bg h-100">
-      <div class="container h-100">
-        <div class="row justify-content-center h-100">
-          <div class="col-xl-6">
-            <div class="form-input-content">
-              <div class="card login-form mb-0">
-                <div class="card-body pt-5">
-                  <% if(isSuccess) { %>
-                  <%- include('includes/successalert.ejs') %>
-                  <% } %>
-                  
-                  <% if(isError) { %>
-                  <%- include('includes/erroralert.ejs') %>
-                  <% } %>
-                  <a class="text-center" href="#">
-                    <center>
-                      <img src="/images/helpdesk.jpg" alt="Help Desk Login" />
-                    </center>
-                  </a>
+  <div class="login-form-bg h-100">
+    <div class="container h-100">
+      <div class="row justify-content-center h-100">
+        <div class="col-xl-6">
+          <div class="form-input-content">
+            <div class="card login-form mb-0">
+              <div class="card-body pt-5">
+                <% if(isSuccess) { %>
+                <%- include('includes/successalert.ejs') %>
+                <% } %>
 
-                  <form
-                    class="mt-5 mb-5 login-input"
-                    action="/admin"
-                    method="POST"
-                    autocomplete="off"
-                    validate
-                  >
-                    <div class="form-group">
-                      <label>Username</label>
-                      <input
-                        type="email"
-                        class="form-control"
-                        placeholder="Enter Email"                       
-                        name="email",
-                        value="<%= oldInput.email %>"
-                        required
-                      />
-                    </div>
-                    <div class="form-group">
-                      <label>Password</label>
-                      <input
-                        type="password"
-                        class="form-control"
-                        placeholder="Enter Password"
-                        required
-                        name="userpassword"
-                        value="<%= oldInput.password %>"
-                      />
-                    </div>
-                    <button class="btn login-form__btn submit w-100">
-                      Sign In
-                    </button>
-                 
-                  </form>
-                  <p class="mt-5 login-form__footer">
-                    Forgotten Password?
-                    <a href="#" class="text-primary">Reset Now</a>
-                  </p>
-                </div>
+                <% if(isError) { %>
+                <%- include('includes/erroralert.ejs') %>
+                <% } %>
+                <a class="text-center" href="#">
+                  <center>
+                    <img src="/images/helpdesk.jpg" alt="Help Desk Login" />
+                  </center>
+                </a>
+
+                <form class="mt-5 mb-5 login-input" action="/admin" method="POST" autocomplete="off" validate>
+                  <div class="form-group">
+                    <label>Username</label>
+                    <input type="email" class="form-control" placeholder="Enter Email" name="email" ,
+                      value="<%= oldInput.email %>" required />
+                  </div>
+                  <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" class="form-control" placeholder="Enter Password" required
+                      name="userpassword" value="<%= oldInput.password %>" />
+                  </div>
+                  <button class="btn login-form__btn submit w-100">
+                    Sign In
+                  </button>
+
+                </form>
+                <p class="mt-5 login-form__footer">
+                  Forgotten Password?
+                  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#basicModal">Reset
+                    Now</button>
+                </p>
               </div>
             </div>
           </div>
         </div>
+        <div class="modal fade" id="basicModal">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Reset Your Password</h5>
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="form-group">
+                  <label for="useremail" class="col-form-label">Enter the email address you login with:</label>
+                  <input type="email" class="form-control" id="useremail" placeholder="Enter your email" required>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="reset">Reset Password</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-hidden="true"
+                id="successAlertModal">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Success!!</h5>
+                            <button type="button" class="close" data-dismiss="modal"><span>&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            email has been sent successfully
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary upd" data-dismiss="modal">OK</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
       </div>
     </div>
+  </div>
 
-    <%- include('includes/end.ejs') %>
-  </body>
+  <%- include('includes/end.ejs') %>
+
+  <script>
+    $(document).ready(function(){
+      $("#reset").click(function(){
+        $.ajax({
+          url:'/admin/reset-password',
+          method:'POST',
+          data:{username:$("#useremail").val()},
+          success: function(data){
+            $("#successAlertModal").modal('show');
+          }
+        })
+      });
+
+       $(document).on('click', '.upd', function () {
+                $("#successAlertModal").modal('hide');
+                $("#basicModal").modal('hide');
+            });
+    });
+  </script>
+
+</body>
+
 </html>

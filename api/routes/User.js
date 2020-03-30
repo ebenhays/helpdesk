@@ -7,12 +7,14 @@ const {
   PostLoginUser,
   ChangeUserPassword,
   postChangeUserPassword,
-  postLogout
+  postLogout,
+  postresetPassword
 } = require("../controller/User");
 const {
   ADMIN_REGISTER,
   ADMIN_CHANGE_PASSWORD,
-  ADMIN_LOGOUT
+  ADMIN_LOGOUT,
+  ADMIN_RESET_PWD
 } = require("../../commons/constants");
 
 const isAuth = require("../middleware/is-auth");
@@ -29,6 +31,7 @@ router.post(
 router.get(ADMIN_LOGOUT, isAuth, postLogout);
 router.get(ADMIN_REGISTER, isAuth, RegisterPage);
 router.post(ADMIN_REGISTER, isAuth, RegisterUser);
+router.post(ADMIN_RESET_PWD, postresetPassword);
 router.get(ADMIN_CHANGE_PASSWORD, isAuth, ChangeUserPassword);
 router.post(ADMIN_CHANGE_PASSWORD, isAuth, postChangeUserPassword);
 

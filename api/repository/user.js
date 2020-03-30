@@ -385,6 +385,44 @@ exports.postChangePassword = async (req, res) => {
   }
 };
 
+exports.resetPassword = async (req, res) => {
+  const email = req.body.username;
+  const checkUser = await models.UserProfiles.findOne({
+    where: { username: email }
+  });
+  if (checkUser !== null) {
+    //means user exists
+    const { fullname } = checkUser.dataValues;
+    const pwd = passwordGenerate();
+    bcrypt.hash(pwd, 12, (err, hash) => {
+      if (err) {
+        return res
+          .status(500)
+          .json({ error: "There was a problem resetting password" });
+      }
+      models.UserProfiles.update(
+        {
+          password: hash,
+          IsDefault: "Y"
+        },
+        { where: { username: email } }
+      );
+      return res.status(200).json({ message: "Password Sent Successfully" });
+    });
+    await sendUserEmail(
+      email,
+      "Account Password Reset",
+      `<p> Dear ${fullname}, <br/>
+         <p> You Requested a password reset on your account.</p><br/>
+         <p> Kindly use this password <b>${pwd}</b> to reset your account.</p> <br/>
+         <p> You can login to <a href="${process.env.BASE_URL}/admin">Helpdesk</a> to reset your password. </p>
+         `
+    );
+  } else {
+    return res.status(401).json({ message: "Not Authorized" });
+  }
+};
+
 const passwordGenerate = () => {
   let pwd = generatePassword(CODE_LENGTH, false);
   return pwd;

@@ -3,6 +3,7 @@ module.exports = {
   ADMIN_LOGIN: "/admin",
   ADMIN_LOGOUT: "/logout",
   ADMIN_REGISTER: "/register",
+  ADMIN_RESET_PWD: "/reset-password",
   VIEW_LOGIN: "login",
   VIEW_CHANGE_PWD: "changepassword",
   VIEW_INDEX: "index",

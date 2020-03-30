@@ -5,7 +5,8 @@ const {
   postLogin,
   changePassword,
   postChangePassword,
-  postLogout
+  postLogout,
+  resetPassword
 } = require("../repository/user");
 
 exports.LoginPage = async (req, res) => {
@@ -30,6 +31,10 @@ exports.ChangeUserPassword = async (req, res) => {
 
 exports.postChangeUserPassword = async (req, res) => {
   await postChangePassword(req, res);
+};
+
+exports.postresetPassword = async (req, res) => {
+  await resetPassword(req, res);
 };
 
 exports.postLogout = async (req, res) => {
