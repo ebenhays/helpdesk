@@ -5,7 +5,10 @@ module.exports = {
     password: process.env.test_DB_PASSWORD,
     database: process.env.test_DATABASE,
     host: process.env.test_DB_HOST,
-    dialect: "mysql"
+    dialect: "mysql",
+    dialectOptions: {
+      connectTimeout: 60000,
+    },
   },
 
   production: {
@@ -13,6 +16,9 @@ module.exports = {
     password: process.env.DB_PASSWORD,
     database: process.env.DATABASE,
     host: process.env.DB_HOST,
-    dialect: "mysql"
-  }
+    dialect: "mysql",
+    dialectOptions: {
+      connectTimeout: 60000,
+    },
+  },
 };
